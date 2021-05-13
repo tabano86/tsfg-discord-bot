@@ -1,0 +1,9 @@
+model\Command.class
+operation\MusicOperations.class
+operation\TextOperations.class
+command\ICommand.class
+model\Settings.class
+listener\AudioListener.class
+Application.class
+listener\MessageListener.class
+config\SettingsConfig.class
