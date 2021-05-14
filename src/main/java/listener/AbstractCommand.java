@@ -42,15 +42,22 @@ public abstract class AbstractCommand {
 
     public abstract void setOptions();
 
-    public void process(MessageReceivedEvent event, List<String> args) {
+    public void process(MessageReceivedEvent event, List<String> args) throws IOException {
         this.event = event;
         this.optionSet = parser.parse(args.toArray(String[]::new));
+        if (this.getOptionSet().has("help")) {
+            help();
+        } else {
+            handle();
+        }
     }
 
     public abstract void handle();
 
     public void help() throws IOException {
-        sendMessageToAuthorChannel(this.getHelpMessage());
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        this.parser.printHelpOn(stream);
+        sendMessageToAuthorChannel(stream.toString());
     }
 
     public void sendMessageToAuthorChannel(String message) {
@@ -81,9 +88,4 @@ public abstract class AbstractCommand {
         return this.event.getAuthor();
     }
 
-    public String getHelpMessage() throws IOException {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        this.parser.printHelpOn(stream);
-        return stream.toString();
-    }
 }

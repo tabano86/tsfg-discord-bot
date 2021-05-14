@@ -15,11 +15,11 @@ public class HelpCommand extends AbstractCommand {
 
     @Override
     public void setOptions() {
-
     }
 
     @Override
     public void handle() {
+        this.help();
     }
 
     @Override

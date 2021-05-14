@@ -5,6 +5,8 @@ import model.CommandContext;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.managers.AudioManager;
 
+import java.io.IOException;
+
 public class JoinCommand extends AbstractCommand {
 
     public JoinCommand(CommandContext commandContext) {
@@ -29,5 +31,10 @@ public class JoinCommand extends AbstractCommand {
         final AudioManager audioManager = this.getEvent().getGuild().getAudioManager();
 
         audioManager.openAudioConnection(voiceChannel);
+    }
+
+    @Override
+    public void help() throws IOException {
+        super.help();
     }
 }

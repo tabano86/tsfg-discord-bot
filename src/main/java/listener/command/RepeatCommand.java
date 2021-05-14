@@ -15,6 +15,7 @@ public class RepeatCommand extends AbstractCommand {
     @Override
     public void setOptions() {
         this.getParser().accepts("m", "message").withRequiredArg();
+        this.getParser().accepts("help", "help");
     }
 
     @Override
