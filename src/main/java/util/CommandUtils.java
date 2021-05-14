@@ -36,6 +36,6 @@ public class CommandUtils {
     }
 
     public static List<String> extractArgs(String text, String command) {
-        return parse(text.substring(command.length() + 1));
+        return parse(text.substring(command.length()));
     }
 }
