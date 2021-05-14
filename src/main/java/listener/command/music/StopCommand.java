@@ -16,6 +16,11 @@ public class StopCommand extends AbstractCommand {
     }
 
     @Override
+    public void setOptions() {
+
+    }
+
+    @Override
     public void handle() {
         this.getPlayerManager().getMusicManager(this.getEvent().getGuild()).audioPlayer.stopTrack();
     }

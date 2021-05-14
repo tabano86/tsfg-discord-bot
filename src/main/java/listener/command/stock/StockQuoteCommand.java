@@ -12,7 +12,12 @@ public class StockQuoteCommand extends AbstractCommand {
     }
 
     public static String getText() {
-        return "stock";
+        return "stock-quote";
+    }
+
+    @Override
+    public void setOptions() {
+        this.getParser().accepts("s", "ticker symbol").withRequiredArg();
     }
 
     @SneakyThrows
@@ -20,7 +25,7 @@ public class StockQuoteCommand extends AbstractCommand {
     public void handle() {
         final ObjectMapper mapper = new ObjectMapper();
 
-        Quote quote = this.getStockService().getQuote(this.getCommand().getParameter());
+        Quote quote = this.getStockService().getQuote(String.valueOf(this.getOptionSet().valueOf("s")));
 
         this.sendMessageToAuthorChannel(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(quote));
     }

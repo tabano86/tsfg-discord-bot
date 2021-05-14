@@ -1,48 +1,56 @@
 package listener;
 
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
 import lavaplayer.PlayerManager;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import model.Command;
 import model.CommandContext;
-import model.IncomingEvent;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import org.apache.commons.lang3.StringUtils;
 import service.StockService;
+import util.CommandHelpFormatter;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.List;
 
 @Slf4j
 @Getter
 public abstract class AbstractCommand {
     private final PlayerManager playerManager;
     private final StockService stockService;
-    private Command command;
+    private final OptionParser parser = new OptionParser();
+
     private MessageReceivedEvent event;
+
+    private OptionSet optionSet;
 
     public AbstractCommand(CommandContext commandContext) {
         this.playerManager = commandContext.getPlayerManager();
         this.stockService = commandContext.getStockService();
+        this.parser.formatHelpWith(new CommandHelpFormatter());
+
+        assert StringUtils.isNoneEmpty(getCommandName());
     }
 
-    public static String getText() {
+    public static String getCommandName() {
         return "";
     }
 
-    public void process(IncomingEvent incomingEvent) {
-        this.event = incomingEvent.getEvent();
-        this.command = incomingEvent.getCommand();
+    public abstract void setOptions();
 
-        if (incomingEvent.getCommand().getMethod().startsWith("help")) {
-            help();
-        } else {
-            handle();
-        }
+    public void process(MessageReceivedEvent event, List<String> args) {
+        this.event = event;
+        this.optionSet = parser.parse(args.toArray(String[]::new));
     }
 
     public abstract void handle();
 
-    public void help() {
-        sendMessageToAuthorChannel(getHelpMessage());
+    public void help() throws IOException {
+        sendMessageToAuthorChannel(this.getHelpMessage());
     }
 
     public void sendMessageToAuthorChannel(String message) {
@@ -73,14 +81,9 @@ public abstract class AbstractCommand {
         return this.event.getAuthor();
     }
 
-    public String getHelpMessage() {
-        String cmd = this.getCommand().getMethod();
-
-        return String.format(
-                """
-                        command: [%s]
-                        description: <empty>
-                        usage: <[%s] [message]>""", //
-                cmd, cmd);
+    public String getHelpMessage() throws IOException {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        this.parser.printHelpOn(stream);
+        return stream.toString();
     }
 }

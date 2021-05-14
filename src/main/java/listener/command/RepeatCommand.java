@@ -13,7 +13,12 @@ public class RepeatCommand extends AbstractCommand {
     }
 
     @Override
+    public void setOptions() {
+        this.getParser().accepts("m", "message").withRequiredArg();
+    }
+
+    @Override
     public void handle() {
-        this.sendMessageToAuthorChannel(super.getCommand().getParameter());
+        this.sendMessageToAuthorChannel(String.valueOf(this.getOptionSet().valueOf("m")));
     }
 }

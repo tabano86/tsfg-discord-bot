@@ -9,17 +9,19 @@ import listener.command.stock.StockQuoteCommand;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import model.CommandContext;
-import model.IncomingEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.apache.commons.lang3.StringUtils;
 import service.StockService;
+import util.CommandUtils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
 public class MessageListener extends ListenerAdapter {
-    private static final char PREFIX = '`';
+    private static final String PREFIX = "`";
     private static final Map<String, AbstractCommand> messageMap = new HashMap<>();
     private static final StockService stockService = new StockService();
 
@@ -30,6 +32,9 @@ public class MessageListener extends ListenerAdapter {
         messageMap.put(HelpCommand.getText(), new HelpCommand(CommandContext.of(playerManager, stockService)));
         messageMap.put(JoinCommand.getText(), new JoinCommand(CommandContext.of(playerManager, stockService)));
         messageMap.put(LeaveCommand.getText(), new LeaveCommand(CommandContext.of(playerManager, stockService)));
+
+        //admin
+        messageMap.put(KickCommand.getText(), new KickCommand(CommandContext.of(playerManager, stockService)));
 
         // music
         messageMap.put(PlayCommand.getText(), new PlayCommand(CommandContext.of(playerManager, stockService)));
@@ -45,26 +50,25 @@ public class MessageListener extends ListenerAdapter {
     public void onMessageReceived(MessageReceivedEvent messageReceivedEvent) {
         String input = messageReceivedEvent.getMessage().getContentStripped();
 
-        if (!hasValidPrefix(input)) return;
+        if (!CommandUtils.hasValidPrefix(input, PREFIX) || messageReceivedEvent.getAuthor().isBot()) return;
 
-        if (messageReceivedEvent.getAuthor().isBot()) return;
+        input = CommandUtils.trimPrefix(input, PREFIX);
 
-        IncomingEvent incomingEvent = IncomingEvent.of(messageReceivedEvent);
-        incomingEvent.getCommand().setMethod(trimPrefix(incomingEvent.getCommand().getMethod()));
+        String command = CommandUtils.extractCommand(input);
 
-        if (!messageMap.containsKey(incomingEvent.getCommand().getMethod())) {
-            log.error("'{}' command does not exist", incomingEvent.getCommand().getMethod());
+        if (StringUtils.isEmpty(command)) {
+            log.error("Could not find a command to parse in string: {}", input);
             return;
         }
 
-        messageMap.get(incomingEvent.getCommand().getMethod()).process(incomingEvent);
+        if (!messageMap.containsKey(command)) {
+            log.error("'{}' command does not exist or is not configured", command);
+            return;
+        }
+
+        List<String> args = CommandUtils.extractArgs(input, command);
+
+        messageMap.get(command).process(messageReceivedEvent, args);
     }
 
-    String trimPrefix(String s) {
-        return s.substring(1);
-    }
-
-    boolean hasValidPrefix(String s) {
-        return s.length() > 2 && s.startsWith(String.valueOf(MessageListener.PREFIX));
-    }
 }

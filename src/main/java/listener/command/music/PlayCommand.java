@@ -22,9 +22,14 @@ public class PlayCommand extends AbstractCommand {
     }
 
     @Override
+    public void setOptions() {
+        this.getParser().accepts("v", "song track").withRequiredArg().ofType(Integer.class);
+    }
+
+    @Override
     public void handle() {
         final TextChannel textChannel = this.getAuthorTextChannel();
-        final String parameter = this.getCommand().getParameter();
+        final String parameter = String.valueOf(this.getOptionSet().valueOf("v"));
 
         this.getEvent().getGuild().findMembers(m -> m.getIdLong() == this.getEvent().getAuthor().getIdLong()).onSuccess(members -> {
             if (CollectionUtils.isEmpty(members)) {

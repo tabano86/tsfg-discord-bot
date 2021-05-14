@@ -14,16 +14,26 @@ public class HelpCommand extends AbstractCommand {
     }
 
     @Override
+    public void setOptions() {
+
+    }
+
+    @Override
     public void handle() {
+    }
+
+    @Override
+    public void help() {
         String msg =
                 """
-                        [TSFG Bot Commands]
-                        play - play a song
-                        stop - stop current song
-                        volume - set volume (0-100)
-                        pm - private message a user
-                        repeat - repeat text
-                        stock - get a stock quote based on symbol
+                        [ TSFG Bot Commands ]
+                                                
+                        play        play a song
+                        stop        stop current song
+                        volume      set volume (0-100)
+                        pm          private message a user
+                        repeat      repeat text
+                        stock       get a stock quote based on symbol
                         help""";
 
         this.sendMessageToAuthorChannel(msg);

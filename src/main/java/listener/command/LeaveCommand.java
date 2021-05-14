@@ -15,6 +15,11 @@ public class LeaveCommand extends AbstractCommand {
     }
 
     @Override
+    public void setOptions() {
+
+    }
+
+    @Override
     public void handle() {
         final AudioManager audioManager = this.getEvent().getGuild().getAudioManager();
 

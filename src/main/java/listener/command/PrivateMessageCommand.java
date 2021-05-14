@@ -17,23 +17,20 @@ public class PrivateMessageCommand extends AbstractCommand {
     }
 
     @Override
+    public void setOptions() {
+        this.getParser().accepts("u", "username").withRequiredArg();
+        this.getParser().accepts("m", "message").withRequiredArg();
+    }
+
+    @Override
     public void handle() {
-        final String parameter = this.getCommand().getParameter();
-
-        String[] argument = parameter.split(" ");
-
-        if (argument.length < 2) {
-            this.sendMessageToAuthorChannel("error: not enough arguments provided");
-            return;
-        }
-
-        User user = this.getAuthorByTag(argument[0]);
+        User user = this.getAuthorByTag(String.valueOf(this.getOptionSet().valueOf("u")));
 
         if (user == null) {
             this.sendMessageToAuthorChannel("error: user does not exist");
             return;
         }
 
-        this.sendPrivateMessageToAuthor(user, parameter);
+        this.sendPrivateMessageToAuthor(user, String.valueOf(this.getOptionSet().valueOf("m")));
     }
 }
