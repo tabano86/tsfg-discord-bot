@@ -7,26 +7,39 @@ import model.CommandContext;
 import model.Quote;
 
 public class StockQuoteCommand extends AbstractCommand {
+    final ObjectMapper mapper = new ObjectMapper();
+
     public StockQuoteCommand(CommandContext commandContext) {
         super(commandContext);
     }
 
     public static String getText() {
-        return "stock-quote";
+        return "stock";
     }
 
-    @Override
     public void setOptions() {
-        this.getParser().accepts("s", "ticker symbol").withRequiredArg();
+        this.getParser().accepts("quote", "get a stock quote");
+        this.getParser().accepts("ticker", "ticker symbol").requiredIf("quote").withRequiredArg();
+        this.getParser().recognizeAlternativeLongOptions(true);
+        this.getParser().accepts("help").forHelp();
     }
 
     @SneakyThrows
     @Override
     public void handle() {
-        final ObjectMapper mapper = new ObjectMapper();
+        if (this.getOptionSet().has("quote")) {
+            Quote quote = this.getStockService().getQuote(String.valueOf(this.getOptionSet().valueOf("s")));
 
-        Quote quote = this.getStockService().getQuote(String.valueOf(this.getOptionSet().valueOf("s")));
+            String msg =
+                    String.format("""   
+                            **[%s]**
+                            ```
+                            price       $%s ($%s - $%s)
+                            volume      %s
+                            change      %s percent```
+                            """, quote.getSymbol(), quote.getPrice(), quote.getLow(), quote.getHigh(), quote.getVolume(), quote.getChangePercent());
 
-        this.sendMessageToAuthorChannel(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(quote));
+            this.sendMessageToAuthorChannel(msg);
+        }
     }
 }

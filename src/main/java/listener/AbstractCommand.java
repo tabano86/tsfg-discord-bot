@@ -4,6 +4,7 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import lavaplayer.PlayerManager;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import model.CommandContext;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -22,6 +23,7 @@ import java.util.List;
 public abstract class AbstractCommand {
     private final PlayerManager playerManager;
     private final StockService stockService;
+    @Setter
     private OptionParser parser = new OptionParser();
 
     private MessageReceivedEvent event;
@@ -33,7 +35,10 @@ public abstract class AbstractCommand {
         this.stockService = commandContext.getStockService();
         this.parser.formatHelpWith(new CommandHelpFormatter());
 
+        setOptions();
         assert StringUtils.isNoneEmpty(getCommandName());
+        assert this.playerManager != null;
+        assert this.stockService != null;
     }
 
     public static String getCommandName() {
@@ -57,7 +62,7 @@ public abstract class AbstractCommand {
     public void help() throws IOException {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         this.parser.printHelpOn(stream);
-        sendMessageToAuthorChannel(stream.toString());
+        sendMessageToAuthorChannel("**" + getCommandName() + "**" + "\n```" + stream.toString() + "```");
     }
 
     public void sendMessageToAuthorChannel(String message) {

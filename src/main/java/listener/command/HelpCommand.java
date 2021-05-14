@@ -26,15 +26,16 @@ public class HelpCommand extends AbstractCommand {
     public void help() {
         String msg =
                 """
-                        [ TSFG Bot Commands ]
                                                 
+                        **[TSFG Bot Commands]**
+                        ```
                         play        play a song
                         stop        stop current song
                         volume      set volume (0-100)
                         pm          private message a user
                         repeat      repeat text
                         stock       get a stock quote based on symbol
-                        help""";
+                        help        get help (duh..)```""";
 
         this.sendMessageToAuthorChannel(msg);
     }

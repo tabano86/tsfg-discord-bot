@@ -1,6 +1,8 @@
 package util;
 
 import joptsimple.OptionDescriptor;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -9,7 +11,10 @@ public class CommandHelpFormatter implements joptsimple.HelpFormatter {
     public String format(Map<String, ? extends OptionDescriptor> options) {
         StringBuilder buffer = new StringBuilder();
         for (OptionDescriptor each : new HashSet<>(options.values())) {
-            buffer.append(lineFor(each));
+            String line = lineFor(each);
+            if (StringUtils.isNotEmpty(line)) {
+                buffer.append(lineFor(each));
+            }
         }
         return buffer.toString();
     }
@@ -20,14 +25,18 @@ public class CommandHelpFormatter implements joptsimple.HelpFormatter {
                     + descriptor.description() + System.getProperty("line.separator");
         }
 
-        String line = descriptor.options().toString() + ": description = " + descriptor.description() +
-                ", required = " + descriptor.isRequired() +
-                ", accepts arguments = " + descriptor.acceptsArguments() +
-                ", requires argument = " + descriptor.requiresArgument() +
-                ", argument description = " + descriptor.argumentDescription() +
-                ", argument type indicator = " + descriptor.argumentTypeIndicator() +
-                ", default values = " + descriptor.defaultValues() +
-                System.getProperty("line.separator");
-        return line;
+        StringBuilder line = new StringBuilder();
+        line.append("\n").append(descriptor.options().toString()).append(" - ").append(descriptor.description());
+        line.append("\n\trequired: ").append(descriptor.isRequired());
+        line.append("\n\taccepts arguments: ").append(descriptor.acceptsArguments());
+        line.append("\n\trequires argument: ").append(descriptor.requiresArgument());
+
+        if (StringUtils.isNotEmpty(descriptor.argumentDescription())) {
+            line.append("\n\targument description: ").append(descriptor.argumentDescription());
+        }
+        if (CollectionUtils.isNotEmpty(descriptor.defaultValues())) {
+            line.append("\n\tdefault values: ");
+        }
+        return line.toString();
     }
 }

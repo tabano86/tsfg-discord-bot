@@ -33,7 +33,7 @@ public class MessageListener extends ListenerAdapter {
         messageMap.put(JoinCommand.getText(), new JoinCommand(CommandContext.of(playerManager, stockService)));
         messageMap.put(LeaveCommand.getText(), new LeaveCommand(CommandContext.of(playerManager, stockService)));
 
-        //admin
+        // admin
         messageMap.put(KickCommand.getText(), new KickCommand(CommandContext.of(playerManager, stockService)));
 
         // music

@@ -1,10 +1,18 @@
-import lombok.SneakyThrows;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class ParseTest {
+    @Test
+    public void test() {
+        OptionParser parser = new OptionParser();
+        parser.accepts("quote");
+        parser.accepts("ticker").requiredIf("quote").withRequiredArg();
+        OptionSet optionSet = parser.parse("-quote", "--ticker", "amd");
+
+        Assertions.assertTrue(optionSet.has("quote"));
+        Assertions.assertTrue(optionSet.hasArgument("ticker"));
+        Assertions.assertTrue(optionSet.has("ticker"));
+    }
 }
