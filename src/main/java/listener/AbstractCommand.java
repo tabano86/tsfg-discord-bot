@@ -22,7 +22,7 @@ import java.util.List;
 public abstract class AbstractCommand {
     private final PlayerManager playerManager;
     private final StockService stockService;
-    private final OptionParser parser = new OptionParser();
+    private OptionParser parser = new OptionParser();
 
     private MessageReceivedEvent event;
 

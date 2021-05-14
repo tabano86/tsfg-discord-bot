@@ -54,7 +54,7 @@ public class MessageListener extends ListenerAdapter {
 
         input = CommandUtils.trimPrefix(input, PREFIX);
 
-        String command = CommandUtils.extractCommand(input);
+        String command = CommandUtils.extractLeadingCommand(input);
 
         if (StringUtils.isEmpty(command)) {
             log.error("Could not find a command to parse in string: {}", input);
