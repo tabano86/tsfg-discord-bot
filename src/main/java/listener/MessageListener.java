@@ -5,57 +5,59 @@ import listener.command.*;
 import listener.command.music.PlayCommand;
 import listener.command.music.StopCommand;
 import listener.command.music.VolumeCommand;
+import listener.command.stock.StockQuoteCommand;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import model.InputCommand;
+import model.CommandContext;
+import model.IncomingEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import service.StockService;
 
-import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
 public class MessageListener extends ListenerAdapter {
     private static final char PREFIX = '`';
-    private static final Map<String, Class<? extends AbstractCommand>> messageMap = new HashMap<>();
-    private final PlayerManager playerManager;
+    private static final Map<String, AbstractCommand> messageMap = new HashMap<>();
+    private static final StockService stockService = new StockService();
 
     public MessageListener(PlayerManager playerManager) {
-        this.playerManager = playerManager;
         // basic
-        messageMap.put(RepeatCommand.getText(), RepeatCommand.class);
-        messageMap.put(PrivateMessageCommand.getText(), PrivateMessageCommand.class);
-        messageMap.put(HelpCommand.getText(), HelpCommand.class);
-        messageMap.put(JoinCommand.getText(), JoinCommand.class);
-        messageMap.put(LeaveCommand.getText(), LeaveCommand.class);
+        messageMap.put(RepeatCommand.getText(), new RepeatCommand(CommandContext.of(playerManager, stockService)));
+        messageMap.put(PrivateMessageCommand.getText(), new PrivateMessageCommand(CommandContext.of(playerManager, stockService)));
+        messageMap.put(HelpCommand.getText(), new HelpCommand(CommandContext.of(playerManager, stockService)));
+        messageMap.put(JoinCommand.getText(), new JoinCommand(CommandContext.of(playerManager, stockService)));
+        messageMap.put(LeaveCommand.getText(), new LeaveCommand(CommandContext.of(playerManager, stockService)));
 
         // music
-        messageMap.put(PlayCommand.getText(), PlayCommand.class);
-        messageMap.put(StopCommand.getText(), StopCommand.class);
-        messageMap.put(VolumeCommand.getText(), VolumeCommand.class);
+        messageMap.put(PlayCommand.getText(), new PlayCommand(CommandContext.of(playerManager, stockService)));
+        messageMap.put(StopCommand.getText(), new StopCommand(CommandContext.of(playerManager, stockService)));
+        messageMap.put(VolumeCommand.getText(), new VolumeCommand(CommandContext.of(playerManager, stockService)));
+
+        // stock
+        messageMap.put(StockQuoteCommand.getText(), new StockQuoteCommand(CommandContext.of(playerManager, stockService)));
     }
 
     @SneakyThrows
     @Override
-    public void onMessageReceived(MessageReceivedEvent event) {
-        String input = event.getMessage().getContentStripped();
+    public void onMessageReceived(MessageReceivedEvent messageReceivedEvent) {
+        String input = messageReceivedEvent.getMessage().getContentStripped();
 
         if (!hasValidPrefix(input)) return;
 
-        if (event.getAuthor().isBot()) return;
+        if (messageReceivedEvent.getAuthor().isBot()) return;
 
+        IncomingEvent incomingEvent = IncomingEvent.of(messageReceivedEvent);
+        incomingEvent.getCommand().setMethod(trimPrefix(incomingEvent.getCommand().getMethod()));
 
-        input = trimPrefix(input);
-
-        InputCommand inputCommand = InputCommand.parse(input);
-
-        if (!messageMap.containsKey(inputCommand.getCommand())) {
-            log.error("'{}' command does not exist", inputCommand.getCommand());
+        if (!messageMap.containsKey(incomingEvent.getCommand().getMethod())) {
+            log.error("'{}' command does not exist", incomingEvent.getCommand().getMethod());
             return;
         }
 
-        createInstance(messageMap.get(inputCommand.getCommand()), inputCommand, event, playerManager);
+        messageMap.get(incomingEvent.getCommand().getMethod()).process(incomingEvent);
     }
 
     String trimPrefix(String s) {
@@ -64,10 +66,5 @@ public class MessageListener extends ListenerAdapter {
 
     boolean hasValidPrefix(String s) {
         return s.length() > 2 && s.startsWith(String.valueOf(MessageListener.PREFIX));
-    }
-
-    public AbstractCommand createInstance(Class<?> c, Object... args) throws Exception {
-        Constructor<?> ctor = c.getConstructor(InputCommand.class, MessageReceivedEvent.class, PlayerManager.class);
-        return ((AbstractCommand) ctor.newInstance(args));
     }
 }

@@ -1,16 +1,14 @@
 package listener.command.music;
 
-import lavaplayer.PlayerManager;
 import listener.AbstractCommand;
 import lombok.extern.slf4j.Slf4j;
-import model.InputCommand;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import model.CommandContext;
 
 @Slf4j
 public class VolumeCommand extends AbstractCommand {
 
-    public VolumeCommand(InputCommand inputCommand, MessageReceivedEvent event, PlayerManager audioPlayerManager) {
-        super(inputCommand, event, audioPlayerManager);
+    public VolumeCommand(CommandContext commandContext) {
+        super(commandContext);
     }
 
     public static String getText() {
@@ -19,6 +17,6 @@ public class VolumeCommand extends AbstractCommand {
 
     @Override
     public void handle() {
-        this.getAudioPlayerManager().getMusicManager(this.getEvent().getGuild()).audioPlayer.setVolume(Integer.parseInt(this.getInputCommand().getArgString()));
+        this.getPlayerManager().getMusicManager(this.getEvent().getGuild()).audioPlayer.setVolume(Integer.parseInt(this.getCommand().getParameter()));
     }
 }

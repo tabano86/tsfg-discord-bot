@@ -3,32 +3,40 @@ package listener;
 import lavaplayer.PlayerManager;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import model.InputCommand;
+import model.Command;
+import model.CommandContext;
+import model.IncomingEvent;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import service.StockService;
 
 @Slf4j
 @Getter
 public abstract class AbstractCommand {
-    private InputCommand inputCommand;
+    private final PlayerManager playerManager;
+    private final StockService stockService;
+    private Command command;
     private MessageReceivedEvent event;
-    private PlayerManager audioPlayerManager;
 
-    public AbstractCommand(InputCommand inputCommand, MessageReceivedEvent event, PlayerManager audioPlayerManager) {
-        this.inputCommand = inputCommand;
-        this.event = event;
-        this.audioPlayerManager = audioPlayerManager;
-
-        if (inputCommand.getArgString().startsWith("help")) {
-            help();
-        } else {
-            handle();
-        }
+    public AbstractCommand(CommandContext commandContext) {
+        this.playerManager = commandContext.getPlayerManager();
+        this.stockService = commandContext.getStockService();
     }
 
     public static String getText() {
         return "";
+    }
+
+    public void process(IncomingEvent incomingEvent) {
+        this.event = incomingEvent.getEvent();
+        this.command = incomingEvent.getCommand();
+
+        if (incomingEvent.getCommand().getMethod().startsWith("help")) {
+            help();
+        } else {
+            handle();
+        }
     }
 
     public abstract void handle();
@@ -66,7 +74,7 @@ public abstract class AbstractCommand {
     }
 
     public String getHelpMessage() {
-        String cmd = this.inputCommand.getCommand();
+        String cmd = this.getCommand().getMethod();
 
         return String.format(
                 """

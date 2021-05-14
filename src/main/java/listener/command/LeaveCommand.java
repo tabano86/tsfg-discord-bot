@@ -1,15 +1,13 @@
 package listener.command;
 
-import lavaplayer.PlayerManager;
 import listener.AbstractCommand;
-import model.InputCommand;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import model.CommandContext;
 import net.dv8tion.jda.api.managers.AudioManager;
 
 public class LeaveCommand extends AbstractCommand {
 
-    public LeaveCommand(InputCommand inputCommand, MessageReceivedEvent event, PlayerManager audioPlayerManager) {
-        super(inputCommand, event, audioPlayerManager);
+    public LeaveCommand(CommandContext commandContext) {
+        super(commandContext);
     }
 
     public static String getText() {

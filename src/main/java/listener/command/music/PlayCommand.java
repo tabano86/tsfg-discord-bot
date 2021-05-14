@@ -1,22 +1,20 @@
 package listener.command.music;
 
-import lavaplayer.PlayerManager;
 import listener.AbstractCommand;
 import lombok.extern.slf4j.Slf4j;
-import model.InputCommand;
+import model.CommandContext;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.managers.AudioManager;
 import org.apache.commons.collections4.CollectionUtils;
 
 @Slf4j
 public class PlayCommand extends AbstractCommand {
 
-    public PlayCommand(InputCommand inputCommand, MessageReceivedEvent event, PlayerManager audioPlayerManager) {
-        super(inputCommand, event, audioPlayerManager);
+    public PlayCommand(CommandContext commandContext) {
+        super(commandContext);
     }
 
     public static String getText() {
@@ -26,6 +24,7 @@ public class PlayCommand extends AbstractCommand {
     @Override
     public void handle() {
         final TextChannel textChannel = this.getAuthorTextChannel();
+        final String parameter = this.getCommand().getParameter();
 
         this.getEvent().getGuild().findMembers(m -> m.getIdLong() == this.getEvent().getAuthor().getIdLong()).onSuccess(members -> {
             if (CollectionUtils.isEmpty(members)) {
@@ -46,9 +45,9 @@ public class PlayCommand extends AbstractCommand {
             final VoiceChannel memberVoiceChannel = memberVoiceState.getChannel();
 
             audioManager.openAudioConnection(memberVoiceChannel);
-            this.getAudioPlayerManager().queueSong(textChannel, String.format("ytsearch: %s", this.getInputCommand().getArgString()));
+            this.getPlayerManager().queueSong(textChannel, String.format("ytsearch: %s", parameter));
         });
 
-        this.sendMessageToAuthorChannel(super.getInputCommand().getArgString());
+        this.sendMessageToAuthorChannel(parameter);
     }
 }

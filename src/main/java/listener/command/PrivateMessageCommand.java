@@ -1,17 +1,15 @@
 package listener.command;
 
-import lavaplayer.PlayerManager;
 import listener.AbstractCommand;
 import lombok.extern.slf4j.Slf4j;
-import model.InputCommand;
+import model.CommandContext;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 @Slf4j
 public class PrivateMessageCommand extends AbstractCommand {
 
-    public PrivateMessageCommand(InputCommand inputCommand, MessageReceivedEvent event, PlayerManager audioPlayerManager) {
-        super(inputCommand, event, audioPlayerManager);
+    public PrivateMessageCommand(CommandContext commandContext) {
+        super(commandContext);
     }
 
     public static String getText() {
@@ -20,7 +18,10 @@ public class PrivateMessageCommand extends AbstractCommand {
 
     @Override
     public void handle() {
-        String[] argument = this.getInputCommand().getArgString().split(" ");
+        final String parameter = this.getCommand().getParameter();
+
+        String[] argument = parameter.split(" ");
+
         if (argument.length < 2) {
             this.sendMessageToAuthorChannel("error: not enough arguments provided");
             return;
@@ -33,6 +34,6 @@ public class PrivateMessageCommand extends AbstractCommand {
             return;
         }
 
-        this.sendPrivateMessageToAuthor(user, this.getInputCommand().getArgString());
+        this.sendPrivateMessageToAuthor(user, parameter);
     }
 }

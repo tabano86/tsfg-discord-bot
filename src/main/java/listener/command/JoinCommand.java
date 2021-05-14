@@ -1,16 +1,14 @@
 package listener.command;
 
-import lavaplayer.PlayerManager;
 import listener.AbstractCommand;
-import model.InputCommand;
+import model.CommandContext;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.managers.AudioManager;
 
 public class JoinCommand extends AbstractCommand {
 
-    public JoinCommand(InputCommand inputCommand, MessageReceivedEvent event, PlayerManager audioPlayerManager) {
-        super(inputCommand, event, audioPlayerManager);
+    public JoinCommand(CommandContext commandContext) {
+        super(commandContext);
     }
 
     public static String getText() {
@@ -20,11 +18,10 @@ public class JoinCommand extends AbstractCommand {
     @Override
     public void handle() {
         VoiceChannel voiceChannel = this.getEvent().getGuild()
-                .getVoiceChannelsByName(this.getInputCommand().getArgString(), true).stream()
+                .getVoiceChannelsByName(this.getCommand().getParameter(), true).stream()
                 .findFirst().orElse(null);
 
         final AudioManager audioManager = this.getEvent().getGuild().getAudioManager();
-
 
         audioManager.openAudioConnection(voiceChannel);
     }

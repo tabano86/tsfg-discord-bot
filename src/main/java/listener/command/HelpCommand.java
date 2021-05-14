@@ -1,14 +1,12 @@
 package listener.command;
 
-import lavaplayer.PlayerManager;
 import listener.AbstractCommand;
-import model.InputCommand;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import model.CommandContext;
 
 public class HelpCommand extends AbstractCommand {
 
-    public HelpCommand(InputCommand inputCommand, MessageReceivedEvent event, PlayerManager audioPlayerManager) {
-        super(inputCommand, event, audioPlayerManager);
+    public HelpCommand(CommandContext commandContext) {
+        super(commandContext);
     }
 
     public static String getText() {
@@ -25,6 +23,7 @@ public class HelpCommand extends AbstractCommand {
                         volume - set volume (0-100)
                         pm - private message a user
                         repeat - repeat text
+                        stock - get a stock quote based on symbol
                         help""";
 
         this.sendMessageToAuthorChannel(msg);
