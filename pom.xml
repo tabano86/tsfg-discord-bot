@@ -51,10 +51,6 @@
         </plugins>
     </build>
 
-    <configuration>
-        <mainClass>com.tsfg.Main</mainClass>
-    </configuration>
-
     <dependencies>
         <dependency>
             <groupId>net.dv8tion</groupId>
