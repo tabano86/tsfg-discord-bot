@@ -28,12 +28,15 @@ public class HelpCommand extends AbstractCommand {
                 """
                                                 
                         **[TSFG Bot Commands]**
-                        ```
+                        ```apache
                         play        play a song
                         stop        stop current song
                         volume      set volume (0-100)
                         pm          private message a user
                         repeat      repeat text
+                        kick        kick an asshole
+                        mute        remove oxygen
+                        unmute      replenish oxygen
                         stock       get a stock quote based on symbol
                         help        get help (duh..)```""";
 

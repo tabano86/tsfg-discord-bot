@@ -18,19 +18,20 @@ public class PrivateMessageCommand extends AbstractCommand {
 
     @Override
     public void setOptions() {
-        this.getParser().accepts("u", "username").withRequiredArg();
-        this.getParser().accepts("m", "message").withRequiredArg();
+        this.getParser().accepts("user", "discord user name").withRequiredArg();
+        this.getParser().accepts("message", "message to be sent").requiredIf("user").withRequiredArg();
+        this.getParser().accepts("help", "get help for the command").forHelp();
     }
 
     @Override
     public void handle() {
-        User user = this.getAuthorByTag(String.valueOf(this.getOptionSet().valueOf("u")));
+        User user = this.getAuthorByTag(String.valueOf(this.getOptionSet().valueOf("user")));
 
         if (user == null) {
             this.sendMessageToAuthorChannel("error: user does not exist");
             return;
         }
 
-        this.sendPrivateMessageToAuthor(user, String.valueOf(this.getOptionSet().valueOf("m")));
+        this.sendPrivateMessageToAuthor(user, String.valueOf(this.getOptionSet().valueOf("message")));
     }
 }

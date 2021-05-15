@@ -23,13 +23,14 @@ public class PlayCommand extends AbstractCommand {
 
     @Override
     public void setOptions() {
-        this.getParser().accepts("v", "song track").withRequiredArg().ofType(Integer.class);
+        this.getParser().accepts("search", "search by song track or artist name (or both!)").withRequiredArg().ofType(Integer.class);
+        this.getParser().accepts("help", "get help for the command").forHelp();
     }
 
     @Override
     public void handle() {
         final TextChannel textChannel = this.getAuthorTextChannel();
-        final String parameter = String.valueOf(this.getOptionSet().valueOf("v"));
+        final String searchString = String.valueOf(this.getOptionSet().valueOf("search"));
 
         this.getEvent().getGuild().findMembers(m -> m.getIdLong() == this.getEvent().getAuthor().getIdLong()).onSuccess(members -> {
             if (CollectionUtils.isEmpty(members)) {
@@ -50,9 +51,9 @@ public class PlayCommand extends AbstractCommand {
             final VoiceChannel memberVoiceChannel = memberVoiceState.getChannel();
 
             audioManager.openAudioConnection(memberVoiceChannel);
-            this.getPlayerManager().queueSong(textChannel, String.format("ytsearch: %s", parameter));
+            this.getPlayerManager().queueSong(textChannel, String.format("ytsearch: %s", searchString));
         });
 
-        this.sendMessageToAuthorChannel(parameter);
+        this.sendMessageToAuthorChannel(searchString);
     }
 }

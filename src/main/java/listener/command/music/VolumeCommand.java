@@ -17,12 +17,13 @@ public class VolumeCommand extends AbstractCommand {
 
     @Override
     public void setOptions() {
-        this.getParser().accepts("v", "volume level (1 - 100)").withRequiredArg().ofType(Integer.class);
+        this.getParser().accepts("level", "volume level (1 - 100)").withRequiredArg().ofType(Integer.class);
+        this.getParser().accepts("help", "get help for the command").forHelp();
     }
 
     @Override
     public void handle() {
         this.getPlayerManager().getMusicManager(this.getEvent().getGuild())
-                .audioPlayer.setVolume(Integer.parseInt(String.valueOf(this.getOptionSet().valueOf("v"))));
+                .audioPlayer.setVolume(Integer.parseInt(String.valueOf(this.getOptionSet().valueOf("level"))));
     }
 }

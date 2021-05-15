@@ -20,23 +20,22 @@ public class StockQuoteCommand extends AbstractCommand {
     public void setOptions() {
         this.getParser().accepts("quote", "get a stock quote");
         this.getParser().accepts("ticker", "ticker symbol").requiredIf("quote").withRequiredArg();
-        this.getParser().recognizeAlternativeLongOptions(true);
-        this.getParser().accepts("help").forHelp();
+        this.getParser().accepts("help", "get help for the command").forHelp();
     }
 
     @SneakyThrows
     @Override
     public void handle() {
         if (this.getOptionSet().has("quote")) {
-            Quote quote = this.getStockService().getQuote(String.valueOf(this.getOptionSet().valueOf("s")));
+            Quote quote = this.getStockService().getQuote(String.valueOf(this.getOptionSet().valueOf("ticker")));
 
             String msg =
                     String.format("""   
                             **[%s]**
-                            ```
+                            ```apache
                             price       $%s ($%s - $%s)
                             volume      %s
-                            change      %s percent```
+                            change      %s```
                             """, quote.getSymbol(), quote.getPrice(), quote.getLow(), quote.getHigh(), quote.getVolume(), quote.getChangePercent());
 
             this.sendMessageToAuthorChannel(msg);

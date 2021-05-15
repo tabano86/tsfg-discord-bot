@@ -48,12 +48,20 @@ public abstract class AbstractCommand {
     public abstract void setOptions();
 
     public void process(MessageReceivedEvent event, List<String> args) throws IOException {
-        this.event = event;
-        this.optionSet = parser.parse(args.toArray(String[]::new));
-        if (this.getOptionSet().has("help")) {
-            help();
-        } else {
-            handle();
+        try {
+            this.event = event;
+            this.optionSet = parser.parse(args.toArray(String[]::new));
+            if (this.getOptionSet().has("help")) {
+                help();
+            } else {
+                handle();
+            }
+        } catch (Exception e) {
+            this.sendMessageToAuthorChannel(String.format("""
+                    ```css
+                    [%s]
+                    ```
+                    """, e.getMessage()));
         }
     }
 
@@ -62,7 +70,12 @@ public abstract class AbstractCommand {
     public void help() throws IOException {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         this.parser.printHelpOn(stream);
-        sendMessageToAuthorChannel("**" + getCommandName() + "**" + "\n```" + stream.toString() + "```");
+        sendMessageToAuthorChannel(String.format("""
+                **%s**
+                ```apache
+                %s
+                ```
+                """, getCommandName(), stream.toString()));
     }
 
     public void sendMessageToAuthorChannel(String message) {

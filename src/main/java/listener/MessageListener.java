@@ -2,6 +2,9 @@ package listener;
 
 import lavaplayer.PlayerManager;
 import listener.command.*;
+import listener.command.admin.KickCommand;
+import listener.command.admin.MuteCommand;
+import listener.command.admin.UnmuteCommand;
 import listener.command.music.PlayCommand;
 import listener.command.music.StopCommand;
 import listener.command.music.VolumeCommand;
@@ -35,6 +38,8 @@ public class MessageListener extends ListenerAdapter {
 
         // admin
         messageMap.put(KickCommand.getText(), new KickCommand(CommandContext.of(playerManager, stockService)));
+        messageMap.put(MuteCommand.getText(), new MuteCommand(CommandContext.of(playerManager, stockService)));
+        messageMap.put(UnmuteCommand.getText(), new UnmuteCommand(CommandContext.of(playerManager, stockService)));
 
         // music
         messageMap.put(PlayCommand.getText(), new PlayCommand(CommandContext.of(playerManager, stockService)));

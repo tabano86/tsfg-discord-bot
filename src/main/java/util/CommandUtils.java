@@ -13,7 +13,7 @@ public class CommandUtils {
         List<String> list = new ArrayList<>();
         Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(text);
         while (m.find()) {
-            list.add(m.group(1).trim());
+            list.add(removeOuterQuotes(m.group(1).trim()));
         }
         return list;
     }
@@ -37,5 +37,17 @@ public class CommandUtils {
 
     public static List<String> extractArgs(String text, String command) {
         return parse(text.substring(command.length()));
+    }
+
+    public static String removeOuterQuotes(String text) {
+        for (int left = 0; left < text.length() / 2; left++) {
+            int right = text.length() - left - 1;
+
+            if (!(text.charAt(left) == text.charAt(right) && (text.charAt(right) == '"' || text.charAt(right) == '\''))) {
+                return text.substring(left, right + 1);
+            }
+        }
+
+        return text;
     }
 }

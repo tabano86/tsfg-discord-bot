@@ -19,13 +19,14 @@ public class JoinCommand extends AbstractCommand {
 
     @Override
     public void setOptions() {
-        this.getParser().accepts("c", "voice channel name").withRequiredArg();
+        this.getParser().accepts("channel", "voice channel name").withRequiredArg();
+        this.getParser().accepts("help", "get help for the command").forHelp();
     }
 
     @Override
     public void handle() {
         VoiceChannel voiceChannel = this.getEvent().getGuild()
-                .getVoiceChannelsByName(String.valueOf(this.getOptionSet().valueOf("c")), true).stream()
+                .getVoiceChannelsByName(String.valueOf(this.getOptionSet().valueOf("channel")), true).stream()
                 .findFirst().orElse(null);
 
         final AudioManager audioManager = this.getEvent().getGuild().getAudioManager();

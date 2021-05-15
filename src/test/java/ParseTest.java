@@ -1,10 +1,9 @@
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 
 public class ParseTest {
-    @Test
+//    @Test
     public void test() {
         OptionParser parser = new OptionParser();
         parser.accepts("quote");
