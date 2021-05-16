@@ -1,0 +1,8 @@
+discord:
+  token: PASTE-TOKEN-HERE
+  prefix: "`"
+alpha-vantage:
+  api-key: PASTE-API-KEY-HERE
+  base-url: https://www.alphavantage.co/query
+web-client:
+  timeout: 60000

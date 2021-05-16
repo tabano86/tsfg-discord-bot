@@ -1,0 +1,8 @@
+discord:
+  token: ODQxMTA1MDUwMzU2MDIzMzQ3.YJh6Hg.Ug7cPV3nLfP4PNttDyVEd8w_TIg
+  prefix: "`"
+alpha-vantage:
+  api-key: VR432GZWF4TXK9BP
+  base-url: https://www.alphavantage.co/query
+web-client:
+  timout: 60000
