@@ -10,23 +10,16 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
+import org.springframework.beans.factory.InitializingBean;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Slf4j
-public class PlayerManager {
-    private final Map<Long, GuildMusicManager> musicManagers;
-    private final AudioPlayerManager audioPlayerManager;
-
-    public PlayerManager() {
-        this.musicManagers = new HashMap<>();
-        this.audioPlayerManager = new DefaultAudioPlayerManager();
-
-        AudioSourceManagers.registerRemoteSources(this.audioPlayerManager);
-        AudioSourceManagers.registerLocalSource(this.audioPlayerManager);
-    }
+public class PlayerManager implements InitializingBean {
+    private final Map<Long, GuildMusicManager> musicManagers = new HashMap<>();
+    private final AudioPlayerManager audioPlayerManager = new DefaultAudioPlayerManager();
 
     public GuildMusicManager getMusicManager(Guild guild) {
         return this.musicManagers.computeIfAbsent(guild.getIdLong(), (guildId) -> {
@@ -127,5 +120,11 @@ public class PlayerManager {
                 log.error("load failed");
             }
         });
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        AudioSourceManagers.registerRemoteSources(this.audioPlayerManager);
+        AudioSourceManagers.registerLocalSource(this.audioPlayerManager);
     }
 }

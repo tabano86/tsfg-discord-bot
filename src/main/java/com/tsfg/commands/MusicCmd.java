@@ -12,7 +12,7 @@ import static picocli.CommandLine.Command;
 import static picocli.CommandLine.Parameters;
 
 @Component
-@Command(name = "music",subcommands = {PlayCmd.class, StopCmd.class, VolumeCmd.class}, mixinStandardHelpOptions = true)
+@Command(name = "music", subcommands = {PlayCmd.class, StopCmd.class, VolumeCmd.class}, mixinStandardHelpOptions = true)
 public class MusicCmd implements Callable<Integer> {
     @Parameters(hidden = true)
     private List<String> allParameters;

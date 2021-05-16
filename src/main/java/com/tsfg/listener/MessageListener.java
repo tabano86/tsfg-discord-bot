@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
+import picocli.CommandLine.IFactory;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -22,11 +23,13 @@ import java.util.regex.Pattern;
 public class MessageListener extends ListenerAdapter {
     public static final ThreadLocal<MessageReceivedEvent> messageReceivedEventThreadLocal = new InheritableThreadLocal<>();
     private final ApplicationCmd applicationCmd;
+    private final IFactory factory;
     @Value("${discord.prefix}")
     private String prefix;
 
-    public MessageListener(ApplicationCmd applicationCmd) {
+    public MessageListener(ApplicationCmd applicationCmd, IFactory factory) {
         this.applicationCmd = applicationCmd;
+        this.factory = factory;
     }
 
     @SneakyThrows
@@ -44,14 +47,19 @@ public class MessageListener extends ListenerAdapter {
 
         messageReceivedEventThreadLocal.set(messageReceivedEvent);
 
-        CommandLine cmd = new CommandLine(applicationCmd);
-        StringWriter out = new StringWriter();
-        cmd.setOut(new PrintWriter(out));
-        cmd.execute(args.toArray(String[]::new));
-        String result = out.toString();
+        try {
+            CommandLine cmd = new CommandLine(applicationCmd, factory);
+            StringWriter out = new StringWriter();
+            cmd.setOut(new PrintWriter(out));
+            cmd.execute(args.toArray(String[]::new));
+            String result = out.toString();
 
-        if (StringUtils.isNotEmpty(result)) {
-            EventUtils.sendMessageToAuthorChannel(messageReceivedEvent, result);
+            if (StringUtils.isNotEmpty(result)) {
+                EventUtils.sendMessageToAuthorChannel(messageReceivedEvent, result);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            EventUtils.sendMessageToAuthorChannel(messageReceivedEvent, e.getMessage());
         }
     }
 }
