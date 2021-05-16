@@ -1,6 +1,13 @@
-/target/
-/.idea/
-/src/main/resources/application-prod.yml
+# Intellij
+.idea/
+*.iml
+*.iws
+
+# Maven
+log/
+target/
 mvnw.cmd
 mvnw
-dicord-bot.iml
+
+#properties
+application-prod.yml
