@@ -1,3 +1,6 @@
 /target/
 /.idea/
 /src/main/resources/application-prod.yml
+mvnw.cmd
+mvnw
+dicord-bot.iml
