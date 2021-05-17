@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.managers.AudioManager;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import picocli.CommandLine.Option;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -29,6 +30,12 @@ public class PlayCmd implements Callable<Integer> {
     @Parameters(arity = "0", description = "song name and/or artist search criteria")
     private String searchString;
 
+    @Option(names = {"-f", "--first"}, description = "force song to be next in queue", defaultValue = "", required = false)
+    private boolean isFirst = false;
+
+    @Option(names = {"-l", "--list"}, description = "get playlist", defaultValue = "", required = false)
+    private boolean isPlaylist = false;
+
     @Parameters(hidden = true)
     private List<String> allParameters;
 
@@ -37,6 +44,11 @@ public class PlayCmd implements Callable<Integer> {
         MessageReceivedEvent event = MessageListener.messageReceivedEventThreadLocal.get();
 
         final TextChannel textChannel = event.getTextChannel();
+
+        if (isPlaylist) {
+            this.playerManager.getListFormatted(textChannel);
+            return 0;
+        }
 
         event.getGuild().findMembers(m -> m.getIdLong() == event.getAuthor().getIdLong()).onSuccess(members -> {
             if (CollectionUtils.isEmpty(members)) {
@@ -52,7 +64,7 @@ public class PlayCmd implements Callable<Integer> {
             final VoiceChannel memberVoiceChannel = memberVoiceState.getChannel();
 
             audioManager.openAudioConnection(memberVoiceChannel);
-            this.playerManager.queueSong(textChannel, String.format("ytsearch: %s", searchString));
+            this.playerManager.queue(textChannel, String.format("ytsearch: %s", searchString), isFirst);
         });
 
         return 0;

@@ -1,7 +1,7 @@
 package com.tsfg.commands;
 
 import com.tsfg.listener.MessageListener;
-import com.tsfg.util.EventUtils;
+import com.tsfg.util.MessageUtils;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +24,7 @@ public class RepeatCmd implements Callable<Integer> {
     public Integer call() throws Exception {
         MessageReceivedEvent event = MessageListener.messageReceivedEventThreadLocal.get();
 
-        EventUtils.sendMessageToAuthorChannel(event, messageText);
+        MessageUtils.sendPublicMessage(event.getTextChannel(), messageText);
 
         return 0;
     }

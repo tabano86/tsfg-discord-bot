@@ -1,6 +1,7 @@
 package com.tsfg.commands;
 
 import com.tsfg.listener.MessageListener;
+import com.tsfg.util.MessageUtils;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.springframework.stereotype.Component;
@@ -29,8 +30,7 @@ public class MessageCmd implements Callable<Integer> {
 
         User user = event.getGuild().getMemberByTag(this.user).getUser();
 
-        user.openPrivateChannel().queue((channel) ->
-                channel.sendMessageFormat(messageText).queue());
+        MessageUtils.sendPrivateMessage(user, messageText);
 
         return 0;
     }

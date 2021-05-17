@@ -2,7 +2,7 @@ package com.tsfg.commands;
 
 import com.tsfg.listener.MessageListener;
 import com.tsfg.service.StockService;
-import com.tsfg.util.EventUtils;
+import com.tsfg.util.MessageUtils;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -30,7 +30,7 @@ public class StockCmd implements Callable<Integer> {
         MessageReceivedEvent event = MessageListener.messageReceivedEventThreadLocal.get();
 
         stockService.getQuote(ticker).subscribe(quote -> {
-            String msg =
+            String messageText =
                     String.format("""
                             **[%s]**
                             ```apache
@@ -38,7 +38,7 @@ public class StockCmd implements Callable<Integer> {
                             volume      %s
                             change      %s```
                             """, quote.getSymbol(), quote.getPrice(), quote.getLow(), quote.getHigh(), quote.getVolume(), quote.getChangePercent());
-            EventUtils.sendMessageToAuthorChannel(event, msg);
+            MessageUtils.sendPublicMessage(event.getTextChannel(), messageText);
         });
 
         return 0;

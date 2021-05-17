@@ -2,7 +2,7 @@ package com.tsfg.listener;
 
 import com.tsfg.commands.ApplicationCmd;
 import com.tsfg.util.CommandUtils;
-import com.tsfg.util.EventUtils;
+import com.tsfg.util.MessageUtils;
 import lombok.SneakyThrows;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -55,11 +55,11 @@ public class MessageListener extends ListenerAdapter {
             String result = out.toString();
 
             if (StringUtils.isNotEmpty(result)) {
-                EventUtils.sendMessageToAuthorChannel(messageReceivedEvent, result);
+                MessageUtils.sendPublicMessage(messageReceivedEvent.getTextChannel(), result);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            EventUtils.sendMessageToAuthorChannel(messageReceivedEvent, e.getMessage());
+            MessageUtils.sendPublicMessage(messageReceivedEvent.getTextChannel(), e.getMessage());
         }
     }
 }
